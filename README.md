@@ -1,4 +1,4 @@
-# Vue Autosize
+# 📏 Vue Autosize
 
 Autosize is a component that automatically interpolates its size to its child’s size.
 
@@ -8,7 +8,7 @@ Autosize is a component that automatically interpolates its size to its child’
 pnpm install @maas/vue-autosize
 ```
 
-## 🚀 Usage
+## 🪄 Use
 
 ```vue
 <script setup>

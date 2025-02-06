@@ -5,6 +5,8 @@
     :style="{
       '--auto-size-width': mappedSize?.width,
       '--auto-size-height': mappedSize?.height,
+      width: 'var(--auto-size-width)',
+      height: 'var(--auto-size-height)',
     }"
   >
     <slot />
@@ -201,10 +203,3 @@ watch(
   }
 )
 </script>
-
-<style>
-.auto-size {
-  width: var(--auto-size-width);
-  height: var(--auto-size-height);
-}
-</style>

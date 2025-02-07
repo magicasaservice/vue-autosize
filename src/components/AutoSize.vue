@@ -51,8 +51,6 @@ const mappedSize = computed(() => {
   if (size) {
     switch (true) {
       case width && height:
-        console.log('width:', interpolated.width)
-        console.log('height:', interpolated.height)
         return {
           width: `${interpolated.width}px`,
           height: `${interpolated.height}px`,
@@ -133,7 +131,6 @@ useMutationObserver(
 useResizeObserver(content, (entries) => {
   const entry = entries[0]
   const { width, height } = entry.contentRect
-  console.log('height:', height)
 
   size.width = width + padding.value.x
   size.height = height + padding.value.y

@@ -130,10 +130,10 @@ useMutationObserver(
 
 useResizeObserver(content, (entries) => {
   const entry = entries[0]
-  const { width, height } = entry.contentRect
+  const boxSize = entry.borderBoxSize[0]
 
-  size.width = width + padding.value.x
-  size.height = height + padding.value.y
+  size.width = boxSize.inlineSize + padding.value.x
+  size.height = boxSize.blockSize + padding.value.y
 })
 
 onMounted(() => {

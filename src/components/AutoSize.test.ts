@@ -12,7 +12,7 @@ describe('AutoSize', () => {
     const wrapper = mount(AutoSize, {
       slots: {
         default: `
-        <div style="{width: '100px', height: '100px'}" />
+        <div style="{width: '100px', height: '100px', padding: '2rem'}" />
         `,
       },
     })

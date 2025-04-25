@@ -12,7 +12,7 @@ describe('AutoSize', () => {
     const wrapper = mount(AutoSize, {
       slots: {
         default: `
-        <div style="{width: '100px', height: '100px', padding: '2rem'}" />
+        <div style="{width: '100px', height: '100px'" />
         `,
       },
     })
@@ -21,6 +21,26 @@ describe('AutoSize', () => {
       const element = wrapper.find('div')
       expect(element.attributes('style')).toBe(
         '--auto-size-width: 100px; --auto-size-height: 100px;'
+      )
+    }, 500)
+  })
+
+  it('should resize according to child and padding', async () => {
+    const wrapper = mount(AutoSize, {
+      style: {
+        padding: '10px',
+      },
+      slots: {
+        default: `
+        <div style="{width: '100px', height: '100px'" />
+        `,
+      },
+    })
+
+    setTimeout(() => {
+      const element = wrapper.find('div')
+      expect(element.attributes('style')).toBe(
+        '--auto-size-width: 120px; --auto-size-height: 120px;'
       )
     }, 500)
   })

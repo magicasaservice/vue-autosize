@@ -1,20 +1,11 @@
 <template>
-  <div
-    ref="elRef"
-    class="auto-size"
-    :style="{
-      '--auto-size-width': mappedSize?.width,
-      '--auto-size-height': mappedSize?.height,
-      width: 'var(--auto-size-width)',
-      height: 'var(--auto-size-height)',
-    }"
-  >
+  <div ref="el" class="auto-size" :style="style">
     <slot />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, watch, onMounted, useTemplateRef } from 'vue'
 import { useResizeObserver, useMutationObserver } from '@vueuse/core'
 import { interpolate } from '../utils/interpolate'
 import { easeOutQuad } from '../utils/easings'
@@ -33,7 +24,7 @@ const {
   easing = easeOutQuad,
 } = defineProps<MagicAutoSizeProps>()
 
-const elRef = ref<HTMLElement | undefined>(undefined)
+const elRef = useTemplateRef('el')
 
 const size = reactive({
   width: 0,
@@ -71,13 +62,18 @@ const mappedSize = computed(() => {
   }
 })
 
+function parse(value: string): number {
+  const parsed = parseFloat(value) ?? 0
+  return isNaN(parsed) ? 0 : parsed
+}
+
 const padding = computed(() => {
   if (elRef.value) {
     const style = getComputedStyle(elRef.value, null)
-    const top = parseFloat(style.getPropertyValue('padding-top'))
-    const left = parseFloat(style.getPropertyValue('padding-left'))
-    const right = parseFloat(style.getPropertyValue('padding-right'))
-    const bottom = parseFloat(style.getPropertyValue('padding-bottom'))
+    const top = parse(style.getPropertyValue('padding-top'))
+    const left = parse(style.getPropertyValue('padding-left'))
+    const right = parse(style.getPropertyValue('padding-right'))
+    const bottom = parse(style.getPropertyValue('padding-bottom'))
     return { x: right + left, y: top + bottom }
   } else {
     return { x: 0, y: 0 }
@@ -88,6 +84,28 @@ const child = computed(() => {
   return Array.from(elRef.value?.childNodes ?? []).find(
     (n) => n instanceof HTMLElement
   )
+})
+
+const style = computed(() => {
+  let mappedStyle = {}
+
+  if (width) {
+    mappedStyle = {
+      ...mappedStyle,
+      width: 'var(--auto-size-width)',
+      '--auto-size-width': mappedSize.value?.width,
+    }
+  }
+
+  if (height) {
+    mappedStyle = {
+      ...mappedStyle,
+      height: 'var(--auto-size-height)',
+      '--auto-size-height': mappedSize.value?.height,
+    }
+  }
+
+  return mappedStyle
 })
 
 useMutationObserver(
@@ -130,10 +148,10 @@ useMutationObserver(
 
 useResizeObserver(content, (entries) => {
   const entry = entries[0]
-  const boxSize = entry.borderBoxSize[0]
+  const contentRect = entry.contentRect
 
-  size.width = boxSize.inlineSize + padding.value.x
-  size.height = boxSize.blockSize + padding.value.y
+  size.width = contentRect.width + padding.value.x
+  size.height = contentRect.height + padding.value.y
 })
 
 onMounted(() => {

@@ -9,18 +9,18 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': root('./src'),
+      vue: 'vue/dist/vue.esm-bundler.js',
     },
     dedupe: ['vue', '@vue/runtime-core'],
   },
   test: {
-    environment: 'jsdom',
+    browser: {
+      enabled: true,
+      provider: 'playwright',
+      instances: [{ browser: 'chromium' }],
+    },
     globals: true,
     exclude: ['**/node_modules/**'],
     include: ['./**/*.test.{ts,js}'],
-    environmentOptions: {
-      jsdom: {
-        resources: 'usable',
-      },
-    },
   },
 })

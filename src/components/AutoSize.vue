@@ -119,8 +119,9 @@ useMutationObserver(
       .flatMap((m) => [...m.addedNodes])
       .find((n) => n instanceof Comment)
 
+    // If a node is added set the content to the first child
     if (!!addedNode && addedNode instanceof HTMLElement) {
-      content.value = addedNode
+      content.value = child.value
     }
 
     // Reset the size when a comment is added and no children are present
@@ -132,7 +133,7 @@ useMutationObserver(
       size.height = 0
     }
 
-    // If the node is removed, reset the size
+    // If no child is present, reset the size
     if (!child.value) {
       content.value = undefined
 

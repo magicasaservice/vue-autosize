@@ -120,8 +120,8 @@ useMutationObserver(
       .find((n) => n instanceof Comment)
 
     // If a node is added set the content to the first child
-    if (!!addedNode && child.value) {
-      content.value = child.value
+    if (!!addedNode) {
+      content.value = addedNode
     }
 
     // Reset the size when a comment is added and no children are present
@@ -143,7 +143,6 @@ useMutationObserver(
   },
   {
     childList: true,
-    subtree: true,
   }
 )
 

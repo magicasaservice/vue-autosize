@@ -120,7 +120,7 @@ useMutationObserver(
       .find((n) => n instanceof Comment)
 
     // If a node is added set the content to the first child
-    if (!!addedNode && addedNode instanceof HTMLElement) {
+    if (!!addedNode && child.value) {
       content.value = child.value
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "@maas/vue-autosize",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Vue component that interpolates its size according to its content",
   "keywords": [
     "Vue",

@@ -5,7 +5,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, watch, onMounted, useTemplateRef } from 'vue'
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  onMounted,
+  useTemplateRef,
+  onBeforeUnmount,
+} from 'vue'
 import { useResizeObserver, useMutationObserver } from '@vueuse/core'
 import { interpolate } from '../utils/interpolate'
 import { easeOutQuad } from '../utils/easings'
@@ -108,7 +116,7 @@ const style = computed(() => {
   return mappedStyle
 })
 
-useMutationObserver(
+let mutationObserver = useMutationObserver(
   elRef,
   (mutations) => {
     const addedNode = mutations
@@ -146,7 +154,7 @@ useMutationObserver(
   }
 )
 
-useResizeObserver(content, (entries) => {
+let resizeObserver = useResizeObserver(content, (entries) => {
   const entry = entries[0]
   const boxSize = entry.borderBoxSize[0]
 
@@ -217,4 +225,9 @@ watch(
     }
   }
 )
+
+onBeforeUnmount(() => {
+  resizeObserver.stop()
+  mutationObserver.stop()
+})
 </script>

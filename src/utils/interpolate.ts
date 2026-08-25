@@ -9,8 +9,7 @@ export type InterpolateArgs = {
 export function interpolate(args: InterpolateArgs) {
   const { from, to, duration, callback, easing = (t) => t * (2 - t) } = args
 
-  // A zero, negative or invalid duration has nothing to interpolate over,
-  // so land on the target in a single frame instead of dividing by it
+  // Immediately execute if no valid duration is set.
   if (!(duration > 0)) {
     requestAnimationFrame(() => callback(to))
     return

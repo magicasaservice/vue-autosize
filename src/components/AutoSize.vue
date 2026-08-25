@@ -88,8 +88,7 @@ const padding = computed(() => {
   }
 })
 
-// Read the child nodes live, a computed would cache its first result and
-// stick to it, because a NodeList is not reactive
+// Prefer function over computed to avoid childNodes being cached.
 function hasChild() {
   return Array.from(elRef.value?.childNodes ?? []).some(
     (n) => n instanceof HTMLElement

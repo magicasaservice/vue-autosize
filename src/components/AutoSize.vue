@@ -88,11 +88,13 @@ const padding = computed(() => {
   }
 })
 
-const child = computed(() => {
-  return Array.from(elRef.value?.childNodes ?? []).find(
+// Read the child nodes live, a computed would cache its first result and
+// stick to it, because a NodeList is not reactive
+function hasChild() {
+  return Array.from(elRef.value?.childNodes ?? []).some(
     (n) => n instanceof HTMLElement
   )
-})
+}
 
 const style = computed(() => {
   let mappedStyle = {}
@@ -134,7 +136,7 @@ let mutationObserver = useMutationObserver(
 
     // Reset the size when a comment is added and no children are present
     // Vue sets a placeholder comment for a v-if
-    if (!!addedComment && !child.value) {
+    if (!!addedComment && !hasChild()) {
       content.value = undefined
 
       size.width = 0
@@ -142,7 +144,7 @@ let mutationObserver = useMutationObserver(
     }
 
     // If no child is present, reset the size
-    if (!child.value) {
+    if (!hasChild()) {
       content.value = undefined
 
       size.width = 0

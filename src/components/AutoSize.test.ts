@@ -137,4 +137,46 @@ describe('AutoSize', () => {
       .poll(() => element.attributes('style'), { timeout })
       .toContain('--auto-size-height: 200px')
   })
+
+  it('should resize again after a child is removed and re-added', async ({
+    expect,
+  }) => {
+    const wrapper = mount(
+      {
+        components: { AutoSize },
+        data: () => ({ visible: true }),
+        template: `
+        <AutoSize>
+          <div
+            v-if="visible"
+            style="display: inline-block; width: 120px; height: 120px; background: orange;"
+          />
+        </AutoSize>
+      `,
+      },
+      { attachTo: document.body }
+    )
+
+    const element = wrapper.find('.auto-size')
+    const timeout = 500
+
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-height: 120px')
+
+    await wrapper.setData({ visible: false })
+
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-height: 0px')
+
+    await wrapper.setData({ visible: true })
+
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-width: 120px')
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-height: 120px')
+  })
 })

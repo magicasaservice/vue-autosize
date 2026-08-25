@@ -95,4 +95,46 @@ describe('AutoSize', () => {
       .poll(() => element.attributes('style'), { timeout })
       .toContain('--auto-size-height: 150px')
   })
+
+  it('should resize the height when the target equals the current width', async ({
+    expect,
+  }) => {
+    const wrapper = mount(
+      {
+        components: { AutoSize },
+        data: () => ({ tall: false }),
+        template: `
+        <AutoSize>
+          <div
+            :style="{
+              display: 'inline-block',
+              width: '200px',
+              height: tall ? '200px' : '100px',
+              background: 'purple',
+            }"
+          />
+        </AutoSize>
+      `,
+      },
+      { attachTo: document.body }
+    )
+
+    const element = wrapper.find('.auto-size')
+    const timeout = 500
+
+    // The interpolated width settles on 200px, which is also the next
+    // height target, so a guard against the wrong axis would skip it
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-width: 200px')
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-height: 100px')
+
+    await wrapper.setData({ tall: true })
+
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-height: 200px')
+  })
 })

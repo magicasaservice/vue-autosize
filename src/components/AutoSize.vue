@@ -214,7 +214,7 @@ watch(
 watch(
   () => size.height,
   (value) => {
-    if (value !== interpolated.width) {
+    if (value !== interpolated.height) {
       interpolate({
         from: interpolated.height,
         to: value,

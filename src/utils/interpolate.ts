@@ -6,13 +6,20 @@ export type InterpolateArgs = {
   callback: (result: number) => void
 }
 
+// Returns a function that stops the run before it lands
 export function interpolate(args: InterpolateArgs) {
   const { from, to, duration, callback, easing = (t) => t * (2 - t) } = args
 
+  let frame: number
+
+  function cancel() {
+    cancelAnimationFrame(frame)
+  }
+
   // Immediately execute if no valid duration is set.
   if (!(duration > 0)) {
-    requestAnimationFrame(() => callback(to))
-    return
+    frame = requestAnimationFrame(() => callback(to))
+    return cancel
   }
 
   let startTime: number
@@ -27,9 +34,11 @@ export function interpolate(args: InterpolateArgs) {
     callback(value)
 
     if (progress < 1) {
-      requestAnimationFrame(animate)
+      frame = requestAnimationFrame(animate)
     }
   }
 
-  requestAnimationFrame(animate)
+  frame = requestAnimationFrame(animate)
+
+  return cancel
 }

@@ -179,4 +179,43 @@ describe('AutoSize', () => {
       .poll(() => element.attributes('style'), { timeout })
       .toContain('--auto-size-height: 120px')
   })
+
+  it('should land on the size the child changes back to mid-animation', async ({
+    expect,
+  }) => {
+    const wrapper = mount(
+      {
+        components: { AutoSize },
+        data: () => ({ height: 100 }),
+        template: `
+        <AutoSize :width="false">
+          <div :style="{ height: height + 'px', background: 'teal' }" />
+        </AutoSize>
+      `,
+      },
+      { attachTo: document.body }
+    )
+
+    const element = wrapper.find('.auto-size')
+    const timeout = 500
+
+    await expect
+      .poll(() => element.attributes('style'), { timeout })
+      .toContain('--auto-size-height: 100px')
+
+    function nextFrame() {
+      return new Promise((resolve) => requestAnimationFrame(resolve))
+    }
+
+    // Collapsed and restored before the collapse draws its first frame,
+    // the run toward 0px has to stop
+    await wrapper.setData({ height: 0 })
+    await nextFrame()
+    await nextFrame()
+    await wrapper.setData({ height: 100 })
+
+    await new Promise((resolve) => setTimeout(resolve, 400))
+
+    expect(element.attributes('style')).toContain('--auto-size-height: 100px')
+  })
 })

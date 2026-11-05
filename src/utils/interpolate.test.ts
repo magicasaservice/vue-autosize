@@ -66,4 +66,21 @@ describe('interpolate', () => {
     await expect.poll(() => values.at(-1), { timeout: 500 }).toBe(100)
     expect(values.length).toBeGreaterThan(1)
   })
+
+  it('should stop calling back once cancelled', async ({ expect }) => {
+    const values: number[] = []
+
+    const cancel = interpolate({
+      from: 0,
+      to: 100,
+      duration: 150,
+      easing: linear,
+      callback: (value) => values.push(value),
+    })
+
+    cancel()
+
+    await new Promise((resolve) => setTimeout(resolve, 250))
+    expect(values.length).toBe(0)
+  })
 })

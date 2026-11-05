@@ -117,7 +117,7 @@ const style = computed(() => {
   return mappedStyle
 })
 
-let mutationObserver = useMutationObserver(
+const mutationObserver = useMutationObserver(
   elRef,
   (mutations) => {
     const addedNode = mutations
@@ -155,7 +155,7 @@ let mutationObserver = useMutationObserver(
   }
 )
 
-let resizeObserver = useResizeObserver(content, (entries) => {
+const resizeObserver = useResizeObserver(content, (entries) => {
   const entry = entries[0]
   const boxSize = entry.borderBoxSize[0]
 
@@ -197,11 +197,18 @@ function heightCallback(value: number) {
   }
 }
 
+// A new size stops the run toward the last one, so a size that changes
+// back before that run draws a frame is never overwritten by it
+let cancelWidth: (() => void) | undefined
+let cancelHeight: (() => void) | undefined
+
 watch(
   () => size.width,
   (value) => {
+    cancelWidth?.()
+    cancelWidth = undefined
     if (value !== interpolated.width) {
-      interpolate({
+      cancelWidth = interpolate({
         from: interpolated.width,
         to: value,
         duration: duration,
@@ -215,8 +222,10 @@ watch(
 watch(
   () => size.height,
   (value) => {
+    cancelHeight?.()
+    cancelHeight = undefined
     if (value !== interpolated.height) {
-      interpolate({
+      cancelHeight = interpolate({
         from: interpolated.height,
         to: value,
         duration: duration,
@@ -228,6 +237,8 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  cancelWidth?.()
+  cancelHeight?.()
   resizeObserver.stop()
   mutationObserver.stop()
 })
